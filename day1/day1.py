@@ -17,7 +17,6 @@ with open('./input.txt') as file:
 print('\nPart 1:')
 print(f'elf {max(elves, key=elves.get)} is carrying the most calories: {max(elves.values())}')
 
-
 # part 2: find the total calories carried by the top 3 elves
 
 # sort the dict by values
