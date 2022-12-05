@@ -1,4 +1,3 @@
-import pandas as pd
 import re
 from pprint import pprint
 import copy
@@ -11,9 +10,7 @@ with open('cranes.txt', 'r') as f:
         lines.append(line)
 
 # initialize empty lists representing the cargo for each crane
-cranes = []
-for i in range(len(lines[0])):
-    cranes.append([])
+cranes = [[] for i in range(len(lines[0]))]
 
 # reverse cargo to put bottom crates on first 
 for line in reversed(lines):
@@ -28,20 +25,19 @@ cranes2 = copy.deepcopy(cranes)
 with open('moves.txt', 'r') as f:
     for line in f:
         move_num, orig, dest = line.replace('move ', '').replace('from ', '').replace('to ', '').split(' ')
-        move_num = int(move_num)
         # get index of lists for origin and destination crane
         orig = int(orig) - 1
         dest = int(dest) - 1
         # print(f'\nmove: {move_num}  orig: {orig}  dest: {dest}')
         
         # list for part 2 to move multiple items in one go
-        pt2_stack = []
-        for i in range(move_num):
+        tmp_stack = []
+        for i in range(int(move_num)):
             # part 1, move one box at a time
             cranes[dest].append(cranes[orig].pop())
             # part 2, move boxes in a stack
-            pt2_stack.insert(0, cranes2[orig].pop())
-        for item in pt2_stack:
+            tmp_stack.insert(0, cranes2[orig].pop())
+        for item in tmp_stack:
             cranes2[dest].append(item)
 
 # pprint(cranes)
