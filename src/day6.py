@@ -1,6 +1,5 @@
 
-# with open('example.txt', 'r') as f:
-with open('input.txt', 'r') as f:
+with open('../data/day6.txt', 'r') as f:
     for line in f:
         signal = list(line)
         for i in range(4, len(signal)):

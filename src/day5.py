@@ -4,7 +4,7 @@ import copy
 
 # list to hold lines of cargo, to be reversed later
 lines = []
-with open('cranes.txt', 'r') as f:
+with open('../data/day5_cranes.txt', 'r') as f:
     for line in f:
         line = re.sub(r'[^\w]', ' ', line).replace('    ', '-').replace(' ', '').replace('-', ' ')
         lines.append(line)
@@ -22,7 +22,7 @@ for line in reversed(lines):
 # use deepcopy to create a second object of the starting order of cargo for part 2
 cranes2 = copy.deepcopy(cranes)
 
-with open('moves.txt', 'r') as f:
+with open('../data/day5_moves.txt', 'r') as f:
     for line in f:
         move_num, orig, dest = line.replace('move ', '').replace('from ', '').replace('to ', '').split(' ')
         # get index of lists for origin and destination crane

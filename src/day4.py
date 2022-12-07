@@ -2,7 +2,7 @@ import pandas as pd
 
 # read in the data
 # spaces = pd.read_csv('example.txt', names=['elf1', 'elf2'])
-spaces = pd.read_csv('input.txt', names=['elf1', 'elf2'])
+spaces = pd.read_csv('../data/day4.txt', names=['elf1', 'elf2'])
 
 # get the low and high ranges for each elf
 spaces['e1_low'] = spaces['elf1'].apply(lambda x: int(x.split('-')[0]))

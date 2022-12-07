@@ -2,7 +2,7 @@ import pandas as pd
 
 # read in the data
 # elves = pd.read_csv('example.txt', names=['backpack'])
-elves = pd.read_csv('input.txt', names=['backpack'])
+elves = pd.read_csv('../data/day3.txt', names=['backpack'])
 
 # split the list of chars into halves
 elves['compartment1'] = elves['backpack'].apply(lambda x: x[:int(len(x)/2)])

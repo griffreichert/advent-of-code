@@ -3,7 +3,7 @@ import itertools
 elves = {}
 elf_index = 1
 
-with open('./input.txt') as file:
+with open('../data/day1.txt') as file:
     for line in file:
         if line == '\n':
             elf_index += 1

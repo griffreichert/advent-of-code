@@ -1,6 +1,6 @@
 import pandas as pd
 
-tournament = pd.read_csv('input.txt', header=None, names=['raw'])
+tournament = pd.read_csv('../data/day2.txt', header=None, names=['raw'])
 
 # attach the choices to the scores of the items
 abc_cipher = {
