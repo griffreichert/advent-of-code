@@ -1,94 +1,81 @@
-import math
+import copy
 import numpy as np 
 
-monkeys = []
-
 class Monkey:
-    def __init__(self, operation, items=[], test=1, if_true=0, if_false=0):
-        self.operation = operation
-        self.items = items
-        self.test = test
-        self.if_true = if_true
-        self.if_false = if_false
+    def __init__(self, attrs: dict):
+        self.items = attrs['items']
+        self.operation = attrs['operation']
+        self.mod = attrs['mod']
+        self.tr = attrs['tr']
+        self.fa = attrs['fa']
         self.inspections = 0
 
     def catch(self, new_item):
         self.items.append(new_item)
         
-    def agent_of_chaos(self):
+    def agent_of_chaos_pt1(self):
         while len(self.items) > 0:
-            item = self.items.pop(0)
             self.inspections += 1
-            post_inspect = math.floor(self.operation(item) / 3)
-            if post_inspect % self.test == 0:
-                monkeys[self.if_true].catch(post_inspect)
+            old = self.items.pop(0)
+            # evaluate operartion and floor divide by 3
+            new = eval(self.operation) // 3
+            # throw item to next monkey
+            if new % self.mod == 0:
+                monkeys[self.tr].catch(new)
             else:
-                monkeys[self.if_false].catch(post_inspect)
+                monkeys[self.fa].catch(new)
 
-    def agent_of_chaos_2(self):
+    def agent_of_chaos_pt2(self):
         while len(self.items) > 0:
-            item = self.items.pop(0)
             self.inspections += 1
-            post_inspect = self.operation(item)
-            if post_inspect % self.test == 0:
-                monkeys[self.if_true].catch(post_inspect)
+            old = self.items.pop(0)
+            # evaluate operartion
+            # https://crypto.stanford.edu/pbc/notes/numbertheory/crt.html
+            # only keep the part that is needed to do the modulo between all the monkeys based on the magic number
+            new = eval(self.operation) % magic_number
+            # throw item to next monkey
+            if new % self.mod == 0:
+                monkeys[self.tr].catch(new)
             else:
-                monkeys[self.if_false].catch(post_inspect)
-        
-def make_lambda(operator, arg2):
-    if arg2 == 'old':
-        if operator == '*':
-            return (lambda x: x * x)
-        else:
-            return (lambda x: x + x)
-    else:
-        if operator == '*':
-            return (lambda x: x * int(arg2))
-        else:
-            return (lambda x: x + int(arg2))
-        
+                monkeys[self.fa].catch(new)
     
 with open('../data/day11.txt', 'r') as f:
-    items = []
-    operation = None
-    test = 1
-    if_true = 0
-    if_false = 0
-    for line in f:
-        line = line.replace('\n', '')
-        if 'Starting items:' in line:
-            items = [int(item) for item in line.replace('  Starting items: ', '').split(',')]
-        elif 'Operation:' in line:
-            tup = line.replace('  Operation: new = old ', '').split(' ')
-            operation = make_lambda(tup[0], tup[1])
-        elif '  Test: ' in line:
-            test = int(line.split(' by ')[1])
-        elif ' If true' in line:
-            if_true = int(line[-1])
-        elif ' If false' in line:
-            if_false = int(line[-1])
-            monkeys.append(Monkey(operation, items, test, if_true, if_false))
+    text = f.read().split('\n\n')
+    
+monkey_text = [line.split('\n') for line in text]
 
-# print(monkeys)
-for i in range(20):
+monkeys = []
+magic_number = 1
+
+for m in monkey_text:
+    monkeys.append(Monkey({
+        'items': [int(it) for it in m[1][17:].split(',')],
+        'operation': m[2][19:],
+        'mod': int(m[3][20:]),
+        'tr': int(m[4][-1]),
+        'fa': int(m[5][-1]),
+    }))
+    # multiply all the modulo numbers together for part 2 (chinese number theorem)
+    magic_number *= int(m[3][20:])
+    
+# copy for part 2
+monkeys_copy = copy.deepcopy(monkeys)
+
+# simulate part 1
+for _ in range(20):
     for m in monkeys:
-        m.agent_of_chaos()
-    print('\n', i)
+        m.agent_of_chaos_pt1()
+
+# calculate the level of monkey business as the product of the top 2 inspection counts
+def monkey_business(monkeys):
+    return np.prod(sorted([m.inspections for m in monkeys], reverse=True)[0:2])
+
+print(f'\nPart 1\n{monkey_business(monkeys)}')
+
+# simulate part 2
+monkeys = monkeys_copy
+for _ in range(10000):
     for m in monkeys:
-        print(m.items)
+        m.agent_of_chaos_pt2()
 
-monkey_business = sorted([m.inspections for m in monkeys], reverse=True)
-print(f'\nPart 1\n{np.prod(monkey_business[0:2])}')
-
-# print(monkeys)
-for i in range(10000):
-    for m in monkeys:
-        m.agent_of_chaos_2()
-    if i % 100 == 0:
-        print(i)
-        print('\n', i)
-        for m in monkeys:
-            print(m.items)
-
-monkey_business_2 = sorted([m.inspections for m in monkeys], reverse=True)
-print(f'\nPart 2\n{np.prod(monkey_business[0:2])}')
+print(f'\nPart 2\n{monkey_business(monkeys)}\n')
