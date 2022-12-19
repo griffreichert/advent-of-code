@@ -1,8 +1,6 @@
 from pprint import pprint
 
-
 with open('../data/day13.txt') as f:
-# with open('../data/example.txt') as f:
     lines = f.read().strip().split('\n\n')
     
 def compare(l, r):
@@ -48,7 +46,6 @@ for i, line in enumerate(lines):
 
 print(f'\nPart 1\n{idx_sum}')
 
-
 packets = []
 for line in lines:
     left, right = map(eval, line.split('\n'))
@@ -60,8 +57,6 @@ key2 = [[6]]
 packets.append(key1)
 packets.append(key2)
 
-pprint(packets)
-
 n = len(packets)
 
 # bubble sort
@@ -71,8 +66,6 @@ for i in range(n):
             tmp = packets[j-1]
             packets[j-1] = packets[j]
             packets[j] = tmp
-
-pprint(packets)
 
 pt2 = (packets.index(key1) + 1) * (packets.index(key2) + 1)
 print(f'\nPart 2\n{pt2}')
