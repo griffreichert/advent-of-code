@@ -15,4 +15,29 @@ def parse(line):
     return (s_i, s_j, b_i, b_j)
 
 sensors = [parse(line) for line in lines]
+min_i = 0
+max_i = 0
+min_j = 0
+max_j = 0
+for s in sensors:
+    min_i = min(min_i, min(s[0], s[2]))
+    max_i = max(max_i, max(s[0], s[2]))
+    min_j = min(min_j, min(s[1], s[3]))
+    max_j = max(max_j, max(s[1], s[3]))
 pprint(sensors)
+print(min_i, max_i)
+print(min_j, max_j)
+
+num_rows = max_i-min_i+1
+row_size = max_j-min_j+1
+grid = [['.']*(row_size) for _ in range(num_rows)]
+
+print(f'{len(grid), len(grid[0])}')
+
+for s in sensors:
+    print(s[1], s[3], min_j)
+    grid[s[0]-min_i][s[1]-min_j] = 'S'
+    grid[s[2]-min_i][s[3]-min_j] = 'B'
+
+for row in grid:
+    print(' '.join(row))
