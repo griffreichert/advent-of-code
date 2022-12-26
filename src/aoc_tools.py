@@ -5,6 +5,15 @@ from typing import TypeVar, Generator, Iterable, Tuple, List
 
 T = TypeVar("T")
 
+def gcd(a, b):
+    if a == 0:
+        return b
+    # recursively calculating the gcd.
+    return gcd(b % a, a)
+
+def lcm(a, b):
+    return (a / gcd(a, b)) * b
+
 def adjacent_pairs(elements: Iterable[T]) -> Generator[Tuple[T, T], None, None]:
     elements_iter = iter(elements)
     last_element = next(elements_iter)
