@@ -1,54 +1,81 @@
 from collections import defaultdict
 
 with open('../data/day18.txt') as f:
+# with open('../data/example.txt') as f:
     lines = f.read().strip().split('\n')
 
-o = defaultdict(int)
+d = defaultdict(int)
 
 cubes = set()
 for line in lines:
     tup = tuple(eval(i) for i in line.split(','))
     cubes.add(tup)
-    o[tup] = 1
+    d[tup] = 1
 
-print(cubes)
+# print(cubes)
 
 neighbors = [(-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1)]
 
 # surface area
 sa = 0
 for cx, cy, cz in cubes:
-    # print(cx)
     for nx, ny, nz in neighbors:
         x = cx + nx
         y = cy + ny
         z = cz + nz
-        if o[x, y, z] == 0:
+        if d[x, y, z] == 0:
             sa += 1
-    # print(c)
-print(sa)
-# max_x = 0
-# max_y = 0
-# max_z = 0
-# for c in cube_list:
-#     max_x = max(max_x, c[0])
-#     max_y = max(max_y, c[1])
-#     max_z = max(max_z, c[2])
 
-# print(cube_list)
-# # print(max_x, max_y, max_z)
+print('Part 1:', sa)
 
-# x = np.zeros((max_y, max_z), dtype=np.int8)
-# y = np.zeros((max_x, max_z), dtype=np.int8)
-# z = np.zeros((max_x, max_y), dtype=np.int8)
+OUTSIDE_AIR = 2
 
-# for c in cube_list:
-#     cx = c[0] - 1
-#     cy = c[1] - 1
-#     cz = c[2] - 1
-#     x[cy][cz] = 1
-#     y[cx][cz] = 1
-#     z[cx][cy] = 1
+def dfs(x, y, z):
+    stack = [(x, y, z)]
+    while len(stack) > 0:
+        x, y, z = stack.pop()
+        if x not in range(-2, 21):
+            continue
+        if y not in range(-2, 21):
+            continue
+        if z not in range(-2, 21):
+            continue
+        if d[x, y, z]:
+            continue
+        d[x, y, z] = OUTSIDE_AIR
+        for nx, ny, nz in neighbors:
+            stack.append((
+                x + nx,
+                y + ny,
+                z + nz
+            ))
 
-# print(f'x: {np.sum(x)}  y: {np.sum(y)}  z: {np.sum(z)}')
-# print(2*np.sum(x) + 2*np.sum(y) + 2*np.sum(z))
+dfs(-2, -2, -2)
+
+# surface area
+sa = 0
+for cx, cy, cz in cubes:
+    for nx, ny, nz in neighbors:
+        x = cx + nx
+        y = cy + ny
+        z = cz + nz
+        if d[x, y, z] == OUTSIDE_AIR:
+            sa += 1
+
+print('Part 2:', sa)
+
+# cube positions range from 0 to 19
+# example cube positions range from 1 to 6
+
+# minx, miny, minz, maxx, maxy, maxz = 1, 1, 1, 1, 1, 1
+# for cx, cy, cz in cubes:
+#     minx = min(minx, cx)
+#     maxx = max(maxx, cx)
+#     miny = min(miny, cy)
+#     maxy = max(maxy, cy)
+#     minz = min(minz, cz)
+#     maxz = max(maxz, cz)
+
+# print(minx, maxx)
+# print(miny, maxy)
+# print(minz, maxz)
