@@ -44,44 +44,36 @@ class DoublyLinkedList:
             self.head = node
             self.tail = node
             return
-        cur = self.head
-        while cur.nxt:
-            cur = cur.nxt
+        cur = self.tail
         cur.nxt = node
         node.prv = cur
         self.tail = node
-
-    def show(self):
+    
+    def apply(self, lam):
         cur = self.head
         while cur.nxt and cur.nxt != self.head:
-            if cur.visited:
-                print('*', end='')
-            print(cur.val, end=', ')
+            lam(cur)
             cur = cur.nxt
-        if cur.visited:
-            print('*', end='')
-        print(cur.val)
+        lam(cur)
+        
+    def show(self):
+        self.apply(lambda x: print(x.val, end=', '))
+        print()
 
     def close_loop(self):
         h = self.head
         t = self.tail
         h.prv = t 
         t.nxt = h
-
+        
     def shuffle(self):
         cur = self.head
+        
         # number of nodes visited
         v = 0
         while v < N:
             # if you have visited a node, go to the next one
             if cur.visited:
-                cur = cur.nxt
-                continue
-            
-            # if the node is 0, dont move it
-            if cur.val == 0:
-                cur.visited = True
-                v += 1
                 cur = cur.nxt
                 continue
 
@@ -96,19 +88,19 @@ class DoublyLinkedList:
             old_r.prv = old_l
 
             # # move the node backwards in the list
-            if cur.val < 0:
-                new_r = cur
-                # print('moving', cur.val, -cur.val % (N - 1))
-                for _ in range((-cur.val) % (N - 1)):
-                    new_r = new_r.prv
-                new_l = new_r.prv
-            # move the node forwards in the list
-            else:
-                new_l = cur
-                # print('moving', cur.val, cur.val % (N - 1))
-                for _ in range(cur.val % (N - 1)):
-                    new_l = new_l.nxt
-                new_r = new_l.nxt
+            # if cur.val < 0:
+            #     new_r = cur
+            #     # print('moving', cur.val, -cur.val % (N - 1))
+            #     for _ in range((-cur.val) % (N - 1)):
+            #         new_r = new_r.prv
+            #     new_l = new_r.prv
+            # # move the node forwards in the list
+            # else:
+            new_l = old_l
+            print('moving', cur.val, cur.val % (N - 1))
+            for _ in range(cur.val % (N - 1)):
+                new_l = new_l.nxt
+            new_r = new_l.nxt
             # set node in position +val to point nxt to node
             new_l.nxt = cur
             # set node in position +val+1 to point prv to node
@@ -117,7 +109,7 @@ class DoublyLinkedList:
             cur.prv = new_l
             # set node to point nxt to +val+1
             cur.nxt = new_r
-            # self.show()
+            self.show()
             cur.visited = True
             cur = old_r
             v += 1
@@ -161,17 +153,18 @@ class DoublyLinkedList:
 encrypted = DoublyLinkedList()
 N = len(enc)
 KEY = 811589153
-# KEY = 1
+KEY = 1
 for e in enc:
     encrypted.append(e * KEY)
 encrypted.close_loop()
+print('\noriginal')
 encrypted.show()
-for i in range(10):
+for i in range(1):
+    print(f'\nround {i+1}')
     encrypted.shuffle()
     encrypted.show()
     e = encrypted.to_list()
-    print(i, f'\nmine: {e}, \ntest: {tests[i]}')
-    assert all(a == b for a, b in zip(e, tests[i]))
+    assert all(a == b for a, b in zip(e, tests[i])), f'\nmine: {e}, \ntest: {tests[i]}'
 
 print('Part 1:', encrypted.find_grove_coordinates())
 
