@@ -1,55 +1,36 @@
-import numpy as np
-from aoc_tools import *
-import copy
-
-
 with open('../data/day20.txt') as f:
     lines = f.read().strip().split('\n')
 
-
+# enc = [1,2,-3,3,-2,0,4] # example case for dev
 enc = list(map(eval, lines))
-enc = [1,2,-3,3,-2,0,4]
-
-tests = [
-    # [811589153, 1623178306, -2434767459, 2434767459, -1623178306, 0, 3246356612],
-    [0, -2434767459, 3246356612, -1623178306, 2434767459, 1623178306, 811589153],
-    [0, 2434767459, 1623178306, 3246356612, -2434767459, -1623178306, 811589153],
-    [0, 811589153, 2434767459, 3246356612, 1623178306, -1623178306, -2434767459],
-    [0, 1623178306, -2434767459, 811589153, 2434767459, 3246356612, -1623178306],
-]
 
 # Node to store each value
 class Node:
+    """A class representing a node in a linked list.
+
+    Attributes:
+    - val: the value stored in the node.
+    - nxt: a reference to the next node in the linked list (default None).
+    - prv: a reference to the previous node in the linked list (default None).
+    """
     def __init__(self, val, nxt=None, prv=None) -> None:
         self.val = val
         self.nxt = nxt
         self.prv = prv
-        self.visited = False
 
-# Circular doubly linked list to represent the input of the "Encrypted file"
 class DoublyLinkedList:
-
+    """Circular doubly linked list to represent the input of the "Encrypted file"
+    """
     def __init__(self) -> None:
+        self.nodes = []     # list to hold nodes (list stores them in their original order)
         self.head = None    # keep track of the start of the list
-        self.tail = None    # keep track of the end of the list
-
-    def append(self, val):
-        """Append a node with the given value to the end of the linked list.
-
-        Args:
-            val: The value of the node to be appended.
-        """
-        node = Node(val)
-        if self.head is None:
-            self.head = node
-            self.tail = node
-            return
-        cur = self.tail
-        cur.nxt = node
-        node.prv = cur
-        self.tail = node
     
     def apply(self, lam):
+        """Apply a function to every node in a circular linked list.
+
+        Parameters:
+        - lam: a function to apply to each node. This function should take a single argument, which will be a node from the linked list.
+        """
         cur = self.head
         while cur.nxt and cur.nxt != self.head:
             lam(cur)
@@ -57,90 +38,70 @@ class DoublyLinkedList:
         lam(cur)
         
     def show(self):
+        """Print out the value of all nodes in the linked list"""
         self.apply(lambda x: print(x.val, end=', '))
-        print()
+        print('\n')
 
-    def close_loop(self):
-        h = self.head
-        t = self.tail
-        h.prv = t 
-        t.nxt = h
+    def link(self):
+        """Link the nodes in a circular linked list.
+
+        This function sets the `nxt` (next) attribute of each node to the
+        next node in the list, and the `prv` (previous) attribute of each
+        node to the previous node in the list. It also sets the `head`
+        attribute of the linked list to the first node in the list.
+        """
+        for l, r in zip(self.nodes, self.nodes[1:]):
+            l.nxt = r
+            r.prv = l
+        self.nodes[0].prv = self.nodes[-1]
+        self.nodes[-1].nxt = self.nodes[0]
+        self.head = self.nodes[0]
         
     def shuffle(self):
-        cur = self.head
-        
-        # number of nodes visited
-        v = 0
-        while v < N:
-            # if you have visited a node, go to the next one
-            if cur.visited:
-                cur = cur.nxt
-                continue
-
-            # if you havent visited the node, move it <val> number of spaces
-            old_l = cur.prv
-            old_r = cur.nxt
-            if cur == self.head:
-                self.head = old_r
-            # set the previous node to point to the next node
-            old_l.nxt = old_r
-            # set next node to point to the previous node
-            old_r.prv = old_l
-
-            # # move the node backwards in the list
-            # if cur.val < 0:
-            #     new_r = cur
-            #     # print('moving', cur.val, -cur.val % (N - 1))
-            #     for _ in range((-cur.val) % (N - 1)):
-            #         new_r = new_r.prv
-            #     new_l = new_r.prv
-            # # move the node forwards in the list
-            # else:
-            new_l = old_l
-            print('moving', cur.val, cur.val % (N - 1))
-            for _ in range(cur.val % (N - 1)):
-                new_l = new_l.nxt
-            new_r = new_l.nxt
-            # set node in position +val to point nxt to node
-            new_l.nxt = cur
-            # set node in position +val+1 to point prv to node
-            new_r.prv = cur
-            # set node to point prv to +val
-            cur.prv = new_l
-            # set node to point nxt to +val+1
-            cur.nxt = new_r
-            self.show()
-            cur.visited = True
-            cur = old_r
-            v += 1
-        # reset visited property of all nodes once shuffling is done 
-        cur = self.head
-        while cur.nxt and cur.nxt != self.head:
-            cur.visited = False
-            cur = cur.nxt
-        cur.visited = False
-        # reset tail 
-        self.tail = self.head.prv
-        # self.tail.visited = False
-
+        # shuffle the nodes going by their original order
+        for cur in self.nodes:
+            if cur == self.head and cur.val != 0:
+                self.head = cur.nxt
+            # remove curent node from current position in the linked list
+            cur.prv.nxt = cur.nxt
+            cur.nxt.prv = cur.prv
+            # initialize left and right neighbors
+            l = cur.prv
+            for _ in range(cur.val % (len(self.nodes) - 1)):
+                l = l.nxt
+            r = l.nxt
+            # insert new node between neighbors
+            l.nxt = cur
+            r.prv = cur
+            # set node to point to neighbords
+            cur.prv = l
+            cur.nxt = r
 
     def find_grove_coordinates(self):
+        """
+        Then, the grove coordinates can be found by looking at the 1000th, 
+        2000th, and 3000th numbers after the value 0, wrapping around the 
+        list as necessary. 
+        """
         cur = self.head
-        n = 0
-        while cur.nxt and cur.nxt is not self.head:
+        while cur.nxt and cur.nxt != self.head:
             if cur.val == 0:
                 break
-            n += 1
             cur = cur.nxt
         res = 0
         for i in [1000, 2000, 3000]:
             tmp = cur
-            for _ in range(i % N):
+            for _ in range(i % len(self.nodes)):
                 tmp = tmp.nxt
             res += tmp.val
         return res
 
     def to_list(self):
+        """Convert a circular linked list to a list.
+
+        Returns:
+        - a list containing the values of the nodes in the linked list, in the order that they appear in the linked list.
+        """
         cur = self.head
         r = []
         while cur.nxt and cur.nxt != self.head:
@@ -148,23 +109,20 @@ class DoublyLinkedList:
             cur = cur.nxt
         r.append(cur.val)
         return r
-        
 
-encrypted = DoublyLinkedList()
-N = len(enc)
+pt1 = DoublyLinkedList()
+pt2 = DoublyLinkedList()
 KEY = 811589153
-KEY = 1
 for e in enc:
-    encrypted.append(e * KEY)
-encrypted.close_loop()
-print('\noriginal')
-encrypted.show()
-for i in range(1):
-    print(f'\nround {i+1}')
-    encrypted.shuffle()
-    encrypted.show()
-    e = encrypted.to_list()
-    assert all(a == b for a, b in zip(e, tests[i])), f'\nmine: {e}, \ntest: {tests[i]}'
+    pt1.nodes.append(Node(e))
+    pt2.nodes.append(Node(e * KEY))
+pt1.link()
+pt2.link()
 
-print('Part 1:', encrypted.find_grove_coordinates())
+pt1.shuffle()
+print('Part 1:', pt1.find_grove_coordinates())
 
+# takes around 7 sec
+for i in range(10):
+    pt2.shuffle()
+print('Part 2:', pt2.find_grove_coordinates())
