@@ -1,7 +1,15 @@
 import numpy as np
 import math
 from copy import deepcopy
-from aoc_tools import *
+
+# import math
+from fractions import gcd
+
+def lcm(a, b):
+    return a * b // gcd(a, b)
+
+# lcm = lcm(12,20)
+# print(lcm)
 
 with open('../data/day17.txt') as f:
     blasts = f.read().strip().split('\n')[0]
@@ -37,14 +45,15 @@ def move_coords(chamber, old_coords, dir='v'):
     return old_coords, True
 
 
-def drop_rocks(num_rocks):
+def drop_rocks(num_rocks=1000000000000):
     n = 3*(num_rocks+2)
     chamber = np.zeros((n, 7), np.int8)
     highest = n
     rock_count = 0
     blast_index = 0
+    states = {}
     while rock_count < num_rocks:
-        for rock in rock_types:
+        for rock_idx, rock in enumerate(rock_types):
             rock_count += 1
             row = (highest - 4)
             # initialize the coordinates of each rock
@@ -54,11 +63,10 @@ def drop_rocks(num_rocks):
             # start drop process
             blocked = False
             while not blocked:
-                # blast it left or right based on blast index
+                # blast rock left or right based on blast index
                 blast_char = blasts[blast_index % B]
-                blast_index += 1
-                # blast rock
                 coords, _ = move_coords(chamber, coords, blast_char)
+                blast_index += 1
                 # drop it down
                 coords, blocked = move_coords(chamber, coords, 'v')
             # reset the old position to air
@@ -71,53 +79,57 @@ def drop_rocks(num_rocks):
             row_sum = np.sum(chamber, axis=1)
             highest = len(row_sum[np.where(row_sum == 0)])
             
+            t = tuple(np.argmax(chamber, axis=0))
+            t2 = tuple(n-i for i in t)
+            t3 = tuple(i - min(t2) for i in t2)
+            
             if rock_count % 1000 == 0:
                 print(f'r: {rock_count}')
 
             if rock_count == num_rocks:
                 break
-    # viz(chamber)
+    # show(chamber)
     return n - highest, chamber 
 
-def drop_a_lot_of_rocks():
-    rocks_repeat = int(lcm(B, 5))
-    print(rocks_repeat)
-    repeat_height, base_chamber = drop_rocks(rocks_repeat)
-    viz(base_chamber[-10:])
-    v = base_chamber.shape[0] - repeat_height
-    viz(base_chamber[v-5:v+5])
+# def drop_a_lot_of_rocks():
+#     rocks_repeat = lcm(B, 5)
+#     print(rocks_repeat)
+#     repeat_height, base_chamber = drop_rocks(rocks_repeat)
+#     show(base_chamber[-10:])
+#     v = base_chamber.shape[0] - repeat_height
+#     show(base_chamber[v-5:v+5])
 
-    gap = 0
+#     gap = 0
 
-    N = 1000000000000
-    remainder = N % rocks_repeat
-    full = N // rocks_repeat
+#     N = 1000000000000
+#     remainder = N % rocks_repeat
+#     full = N // rocks_repeat
     
-    print(f'repeat_height: {repeat_height}')
-    print(f'full: {full}')
-    print(f'rem: {remainder}')
-    bonus = drop_rocks(remainder)[0]
-    print(f'bonus: {bonus}')
+#     print(f'repeat_height: {repeat_height}')
+#     print(f'full: {full}')
+#     print(f'rem: {remainder}')
+#     bonus = drop_rocks(remainder)[0]
+#     print(f'bonus: {bonus}')
 
-    return repeat_height + (full - 1) * (repeat_height - gap) + bonus
+#     return repeat_height + (full - 1) * (repeat_height - gap) + bonus
 
 
 # 1514285714288
 # 1625000000000
 
-def viz(chamber):
+def show(chamber):
     print()
     for row in chamber:
         print(' '.join(['.' if c == 0 else '#' if c == 2 else '@' for c in row]))
     print()    
 
 # v = chamber.shape[0] - height
-# viz(chamber[v-5:v+5])
+# show(chamber[v-5:v+5])
 # print([0])
-print(drop_a_lot_of_rocks())
+# print(drop_a_lot_of_rocks())
 # height, chamber = drop_rocks(2022)
-# viz(chamber[-10:])
+# show(chamber[-10:])
 
 
-1514285714288
-76675000000000
+# 1514285714288
+# 76675000000000
