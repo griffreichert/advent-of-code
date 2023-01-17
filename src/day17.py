@@ -11,17 +11,16 @@ with open('../data/day17.txt') as f:
     blasts = f.read().strip().split('\n')[0]
 
 blasts = '>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>'
-# B = len(blasts)
-# print(B)
-
+B = len(blasts)
+print('blasts:', B)
 
 # from the point 0,0 representing the bottom left corner of each rock, create the rock by following these moves
 rocks_list = [
     [(0, 0), (0, 1), (0, 2), (0,3)], 
-    [(0, 1), (-1, 0),  (-1, 1), (-1, 2), (-2, 1)], 
-    [(0, 0), (0, 1), (0, 2), (-1, 2), (-2, 2)], 
-    [(0, 0), (-1, 0), (-2, 0), (-3, 0)], 
-    [(0, 0), (0, 1), (-1, 0), (-1, 1)], 
+    [(0, 1), (1, 0),  (1, 1), (1, 2), (2, 1)], 
+    [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)], 
+    [(0, 0), (1, 0), (2, 0), (3, 0)], 
+    [(0, 0), (0, 1), (1, 0), (1, 1)], 
 ]
 
 print('expected repeat iter')
@@ -60,82 +59,77 @@ def move_coords(old_coords, dir='v'):
 
 
 def drop_rocks(num_rocks=1000000000000):
-    heights = [0 for _ in range(7)]
+    heights = [-1 for _ in range(7)]
     max_height = max(heights)
+    heights_tup = tuple(heights)
     rock_count = 0
+    blast_idx = 0
     states = {}
 
     while True:
-        for blast_idx, blast in enumerate(blasts):
-            rock_idx = blast_idx % 4
-            rock = rocks_list[rock_idx]
-
+        for rock_idx, rock in enumerate(rocks_list):
+            blast = blasts[blast_idx % B]
             # get the state of the top of the rocks
 
 
             # check if you have seen this state before
-            if tuple()
-
+            if (heights_tup, rock_idx, blast_idx) in states:
+                print('hit it')
+                print(heights_tup, rock_idx, blast_idx)
+                print(states[(heights_tup, rock_idx, blast_idx)])
+                # return
             # initialize the coordinates of each rock
-            coords = [(ry + max_height + 3, rx + 2) for ry, rx in rock]
+            coords = [(ry + max_height + 4, rx + 2) for ry, rx in rock]
             
             # start drop process
             blocked = False
+            # print(rock_idx, (blast_idx, blast), max_height)
+            # show(8, coords)
             while not blocked:
                 # blast rock left or right based on blast index
+                blast = blasts[blast_idx % B]
                 coords, _ = move_coords(coords, blast)
+                blast_idx += 1
                 # drop it down
                 coords, blocked = move_coords(coords, 'v')
-            # set chambr coordinates to rock
-            for cy, cx in coords: chamber[(cy, cx)] = 1
+            for cy, cx in coords: 
+                # set chambr coordinates to rock
+                chamber[(cy, cx)] = 1
+                # update max height of each column
+                heights[cx] = max(heights[cx], cy)
 
+            # get highest point
+            max_height = max(heights)
             
+            heights_tup = tuple(h - max_height for h in heights)
 
-    #     for rock_idx, rock in enumerate(rock_types):
-    #         rock_count += 1
-    #         row = (highest - 4)
-    #         for c in coords:
-    #             chamber[c] = 1
-    #         blocked = False
-    #         while not blocked:
+            rock_count +=1 
+            states[(heights_tup, rock_idx, blast_idx - 1)] = max_height, rock_count
 
-    #         # reset the old position to air
-    #         chamber = np.where(chamber==1, 0, chamber)
-    #         # turn falling rock into stationary rock 
-    #         for c in coords:
-    #             chamber[c] = 2
-            
-    #         # update highest point
-    #         row_sum = np.sum(chamber, axis=1)
-    #         highest = len(row_sum[np.where(row_sum == 0)])
-            
-    #         # represent the top of the pile of rocks as a tuple of 7 ints
-    #         t = tuple(np.argmax(chamber, axis=0))
-    #         t2 = tuple(n-i for i in t)
-    #         t3 = tuple(i - min(t2) for i in t2)
-    #         print(t)
-    #         print(t2)
-    #         print(t3)
-    #         # show(chamber[:-10])
-    #         return
-    #         if rock_count % 1000 == 0:
-    #             print(f'r: {rock_count}')
-
-    #         if rock_count == num_rocks:
-    #             break
-    # # show(chamber)
-    # return n - highest, chamber
+            show(8)
+            if rock_count == num_rocks:
+                print(len(states))
+                print(max_height)
+                return max_height
 
 # 1514285714288
 # 1625000000000
 
-def show(chamber):
+def show(num_rows, tmp_coords=[]):
     print()
-    for row in chamber:
-        print(' '.join(['.' if c == 0 else '#' if c == 2 else '@' for c in row]))
+    for i in reversed(range(num_rows)):
+        for j in range(7):
+            if (i, j) in tmp_coords:
+                print('%', end=' ')
+            elif (i, j) in chamber:
+                print('#', end=' ')
+            else:
+                print('.', end=' ')
+        print()
+        # print(' '.join(['.' if c == 0 else '#' if c == 2 else '@' for c in row]))
     print()    
 
-# drop_rocks(200)
+drop_rocks(2022)
 
 # v = chamber.shape[0] - height
 # show(chamber[v-5:v+5])
