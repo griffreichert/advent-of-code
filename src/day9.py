@@ -1,5 +1,4 @@
 import numpy as np
-from copy import deepcopy
 
 with open('../data/example.txt', 'r') as f:
     lines = [line for line in f]

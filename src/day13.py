@@ -1,5 +1,3 @@
-from pprint import pprint
-
 with open('../data/day13.txt') as f:
     lines = f.read().strip().split('\n\n')
     

@@ -1,9 +1,21 @@
-import functools
+# import functools
+from functools import cache
 from pprint import pprint
-
-# with open('../data/day16.txt') as f:
-with open('../data/example.txt') as f:
+import re
+c
+with open('../data/day16.txt') as f:
     lines = f.read().strip().split('\n')
+
+# lines = """Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+# Valve BB has flow rate=13; tunnels lead to valves CC, AA
+# Valve CC has flow rate=2; tunnels lead to valves DD, BB
+# Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+# Valve EE has flow rate=3; tunnels lead to valves FF, DD
+# Valve FF has flow rate=0; tunnels lead to valves EE, GG
+# Valve GG has flow rate=0; tunnels lead to valves FF, HH
+# Valve HH has flow rate=22; tunnel leads to valve GG
+# Valve II has flow rate=0; tunnels lead to valves AA, JJ
+# Valve JJ has flow rate=21; tunnel leads to valve II""".split('\n')
 
 # dict to hold which valves tunnel to which valves
 tunnels = {}
@@ -11,46 +23,42 @@ tunnels = {}
 flow = {}
 for l in lines:
     v = l[6:8]
-    flow[v] = eval(l.split('=')[1].split(';')[0])
+    flow[v] = int(re.findall("\d+", l)[0])
     tunnels[v] = l.replace('valve ', 'valves ').split('valves ')[1].split(', ')
-
-# @functools.lru_cache(maxsize=None)
-# def max_pressure(cur, opened, min):
-#     # base case: when time runs out
-#     if min <= 0:
-#         return 0
-#     best = 0
-#     if cur not in opened:
-#         cur_pressure = (min - 1) * flow[cur]
-#         cur_opened = opened + (cur,)
-#         # print(cur_opened)
-#         for adj in tunnels[cur]:
-#             # if you open cur (only open it if flow > 0)
-#             if flow[cur] != 0:
-#                 best = max(best, cur_pressure + max_pressure(adj, cur_opened, min - 2))
-#             # if you dont open cur
-#             best = max(best, max_pressure(adj, opened, min - 1))
-#     return best
-        
-# print(max_pressure('AA', (), 30))
-
 # pprint(flow)
-# pprint(tunnels)
-
-@functools.lru_cache(maxsize=None)
-def maxflow(cur, opened, min_left):
-    if min_left <= 0:
+ 
+@cache
+def max_pressure(cur, opened, toc):
+    # base case: when time runs out
+    if toc <= 0:
         return 0
-    best = 0
-    if cur not in opened:
-        val = (min_left - 1) * flow[cur]
-        cur_opened = tuple(sorted(opened + (cur,)))
-        for adj in tunnels[cur]:
-            if val != 0:
-                best = max(best,
-                    val + maxflow(adj, cur_opened, min_left - 2))
-            best = max(best,
-                maxflow(adj, opened, min_left - 1))
-    return best
 
-print(maxflow("AA", (), 30))
+    # Option 1: dont open the valve and go to neighbors
+    best_if_walk = max([max_pressure(adj, opened, toc - 1) for adj in tunnels[cur]])
+
+    if flow[cur] > 0 and cur not in opened:
+        # if you open the valve you get the pressure of the valve, plus your best option with time remaining
+        best_if_open = flow[cur] * (toc - 1) + max_pressure(cur, opened + (cur,), toc - 1)
+        return max(best_if_open, best_if_walk)
+    return best_if_walk
+
+print('Part 1:', max_pressure('AA', (), 30))
+
+@cache
+def elephant_in_the_tunnels(h_cur, e_cur, opened, toc):
+    # base case: when time runs out
+    if toc <= 0:
+        return 0
+
+    # 1: do the human
+    # Option 1: dont open the valve and go to neighbors
+    best_if_walk = max([max_pressure(adj, opened, toc - 1) for adj in tunnels[cur]])
+
+    if flow[cur] > 0 and cur not in opened:
+        # if you open the valve you get the pressure of the valve, plus your best option with time remaining
+        best_if_open = flow[cur] * (toc - 1) + max_pressure(cur, opened + (cur,), toc - 1)
+        return max(best_if_open, best_if_walk)
+    return best_if_walk
+    # dont move to the same tunnel as the elephant
+
+print('Part 1:', max_pressure('AA', 'AA', (), 26))
