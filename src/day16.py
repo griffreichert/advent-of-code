@@ -46,10 +46,11 @@ def max_pressure(cur, opened, toc, elephant_time=False):
             """
             return max_pressure('AA', opened, 26, False)
         return 0
-
+    
     # Option 1: dont open the valve and go to neighbors
     best_if_walk = max([max_pressure(adj, opened, toc - 1, elephant_time) for adj in tunnels[cur]])
-
+    best_if_open = 0
+    
     # Option 2: only open valves that will release pressure and that we have not opened previously
     if cur not in opened and flow[cur] > 0:
         # add current valve to set of open valves
@@ -58,10 +59,7 @@ def max_pressure(cur, opened, toc, elephant_time=False):
         best_if_open = flow[cur] * (toc - 1)
         # ...plus your best option with time remaining
         best_if_open += max_pressure(cur, frozenset(new_opened), toc - 1, elephant_time)
-        return max(best_if_open, best_if_walk)
-    return best_if_walk
-
-
+    return max(best_if_open, best_if_walk)
 
 print('Part 1:', max_pressure('AA', frozenset(), 30))
 print('Part 2:', max_pressure('AA', frozenset(), 26, True))
