@@ -2,7 +2,7 @@
 from functools import cache
 from pprint import pprint
 import re
-c
+
 with open('../data/day16.txt') as f:
     lines = f.read().strip().split('\n')
 
@@ -28,37 +28,40 @@ for l in lines:
 # pprint(flow)
  
 @cache
-def max_pressure(cur, opened, toc):
+def max_pressure(cur, opened, toc, elephant_time=False):
+    """Recursive algorithm to find the maximum possible pressure to release in advent of code day 16
+
+    Parameters:
+        - cur: string representing the tuple you are currently at
+        - opened: a tuple containing all of the valves that have been opened. ex: ('AA', 'BB'), important for caching that it is hashable
+        - toc: int representing the number of minutes remaining
+    """
     # base case: when time runs out
-    if toc <= 0:
+    if toc == 0:
+        # solution to pt 2
+        if elephant_time:
+            """
+            For part 2, we as the human take the optimal path to release as much pressure as possible
+            When we run out of time, we then send the elephant to essentially go over the path and get any valves we missed 
+            """
+            return max_pressure('AA', opened, 26, False)
         return 0
 
     # Option 1: dont open the valve and go to neighbors
-    best_if_walk = max([max_pressure(adj, opened, toc - 1) for adj in tunnels[cur]])
+    best_if_walk = max([max_pressure(adj, opened, toc - 1, elephant_time) for adj in tunnels[cur]])
 
-    if flow[cur] > 0 and cur not in opened:
-        # if you open the valve you get the pressure of the valve, plus your best option with time remaining
-        best_if_open = flow[cur] * (toc - 1) + max_pressure(cur, opened + (cur,), toc - 1)
+    # Option 2: only open valves that will release pressure and that we have not opened previously
+    if cur not in opened and flow[cur] > 0:
+        # add current valve to set of open valves
+        new_opened = tuple(opened) + (cur,)
+        # if you open the valve you get the pressure of the valve... 
+        best_if_open = flow[cur] * (toc - 1)
+        # ...plus your best option with time remaining
+        best_if_open += max_pressure(cur, frozenset(new_opened), toc - 1, elephant_time)
         return max(best_if_open, best_if_walk)
     return best_if_walk
 
-print('Part 1:', max_pressure('AA', (), 30))
 
-@cache
-def elephant_in_the_tunnels(h_cur, e_cur, opened, toc):
-    # base case: when time runs out
-    if toc <= 0:
-        return 0
 
-    # 1: do the human
-    # Option 1: dont open the valve and go to neighbors
-    best_if_walk = max([max_pressure(adj, opened, toc - 1) for adj in tunnels[cur]])
-
-    if flow[cur] > 0 and cur not in opened:
-        # if you open the valve you get the pressure of the valve, plus your best option with time remaining
-        best_if_open = flow[cur] * (toc - 1) + max_pressure(cur, opened + (cur,), toc - 1)
-        return max(best_if_open, best_if_walk)
-    return best_if_walk
-    # dont move to the same tunnel as the elephant
-
-print('Part 1:', max_pressure('AA', 'AA', (), 26))
+print('Part 1:', max_pressure('AA', frozenset(), 30))
+print('Part 2:', max_pressure('AA', frozenset(), 26, True))
