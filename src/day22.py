@@ -4,7 +4,7 @@ import sys
 EXAMPLE = True if '-e' in sys.argv else False
 
 # Example case: part 1 expects 6032 
-inpt = """        ...#
+lines = """        ...#
         .#..
         #...
         ....
@@ -87,10 +87,10 @@ arrow_adj = {
 print_grid = {
     OPEN_SPACE: ' ',
     BLOCKED_SPACE: '.',
-    0: '>',
-    1: 'v',
-    2: '<',
-    3: '^',
+    0: '\033[0;36m>\033[0m',
+    1: '\033[0;36mv\033[0m',
+    2: '\033[0;36m<\033[0m',
+    3: '\033[0;36m^\033[0m',
 }
 
 """LOGIC FOR PART 2
@@ -121,7 +121,7 @@ face map
 if not EXAMPLE:
     face_map = {}   # keys: (row, column, facing), values: (new_row, new_column, new_facing)
     for i in range(50):
-        face_map[(49, 100 + i, 1)] = (50 + i, 99, 2) # 1 to 3 link
+        face_map[(49, 100 + i, 1)] = (50 + i, 99, 2) # 1 to 3 link 
         face_map[(50 + i, 99, 0)] = (49, 100 + i, 3) # 3 to 1 link
 
         face_map[(i, 149, 0)] = (149 - i, 99, 2) # 1 to 4 link
@@ -130,11 +130,11 @@ if not EXAMPLE:
         face_map[(0, 100 + i, 3)] = (199, i, 3) # 1 to 6 link
         face_map[(199, i, 1)] = (0, 100 + i, 1) # 6 to 1 link
 
-        face_map[(i, 50, 2)] = (100 + i, 0, 0) # 2 to 5 link
-        face_map[(100 + i, 0, 2)] = (i, 50, 0) # 5 to 2 link
+        face_map[(i, 50, 2)] = (149 - i, 0, 0) # 2 to 5 link
+        face_map[(149 - i, 0, 2)] = (i, 50, 0) # 5 to 2 link
 
-        face_map[(0, 50 + i, 3)] = (199 - i, 0, 0) # 2 to 6 link
-        face_map[(199 - i, 0, 2)] = (0, 50 + i, 1) # 6 to 2 link
+        face_map[(0, 50 + i, 3)] = (150 + i, 0, 0) # 2 to 6 link
+        face_map[(150 + i, 0, 2)] = (0, 50 + i, 1) # 6 to 2 link
 
         face_map[(50 + i, 50, 2)] = (100, i, 1) # 3 to 5 link
         face_map[(100, i, 3)] = (50 + i, 50, 0) # 5 to 3 link
@@ -150,15 +150,18 @@ grid = defaultdict(int)
 n, m = len(lines), max(len(l) for l in lines)
 
 def show(end=None):
-    for i in range(n):
-        for j in range(m):
+    for i in range(-1, n+1):
+        for j in range(-1, m+1):
             c = ' '
             if (i, j) in grid:
                 c = print_grid[grid[(i, j)]]
+            # print a border of # around the grid
+            elif any([tuple(x + y for x, y in zip((i, j), v)) in grid for v in [*arrow_adj.values(), (-1, -1), (1, -1), (-1, 1), (1, 1)]]):
+                c = '\033[1;31m#\033[0m'
             # if any((i, j, tmp_f) in face_map for tmp_f in range(4)):
             #     c = '!'
             if (i, j) == pos:
-                c = '@'
+                c = '\033[0;32m@\033[0m'
             print(c, end=' ')
         print()
     print()
@@ -171,26 +174,16 @@ for i, line in enumerate(lines):
         elif c == '#':
             grid[(i, j)] = BLOCKED_SPACE
 
-# Init starting position: (top left), facing: '>' = 0
+# Init starting position: (top left), facing right: 0
 pos = (0, min([k[1] for k in grid.keys() if k[0] == 0]))
 f = 0
 
-def update_facing(turn):
-    global f
-    if turn == 'R':
-        f = (f + 1) % 4
-    elif turn == 'L':
-        f = (f - 1) % 4
-    assert f in range(4)
-
 def update_pos(cube=False):
     global pos, f   # reference global pos & f variables to update
-    npos = (-1, -1)
     ni, nj = tuple(x + y for x, y in zip(pos, arrow_adj[f])) # move position 1 unit in the direction we are currently facing
-    f_copy = f
     if cube:
         if (*pos, f) in face_map:
-            ni, nj, f = face_map[(*pos, f)]
+            ni, nj, nf = face_map[(*pos, f)]
     else:
         # check that new position is in the grid
         if (ni, nj) not in grid:
@@ -205,17 +198,18 @@ def update_pos(cube=False):
             else:
                 assert False
     npos = (ni, nj)
+    assert npos in grid, (pos, f, npos, nf)
     # if the new space is blocked, dont update the position
-    assert npos in grid, (pos, f_copy, npos, f)
-    if npos in grid and grid[npos] == BLOCKED_SPACE:
+    if grid[npos] == BLOCKED_SPACE:
         return False
-    pos = npos
-    grid[pos] = f
+    f = nf          # Update the facing
+    pos = npos      # Update the position
+    grid[pos] = f   # Mark that position
     return True
     
 def trace_path(moves, cube=False):
     i = 0
-    global pos
+    global pos, f
     while i < len(moves):
         grid[pos] = f   # mark current position with new way you are facing
         
@@ -224,31 +218,25 @@ def trace_path(moves, cube=False):
             while j < len(moves) and moves[j].isnumeric():
                 j += 1
             steps = eval(moves[i:j])
-            
             for _ in range(steps):
-                if not update_pos(cube=cube):   # if you update position and are blocked, skip to the next instr
+                if not update_pos(cube):   # if you update position and are blocked, skip to the next instr
                     break
             i = j # jump forward in moves
         
         else:   # if your current position is not a number, it must be an L or an R
             assert moves[i] in 'LR', (i, moves[i])
-            update_facing(moves[i])
+            if moves[i] == 'R':
+                f = (f + 1) % 4
+            elif moves[i] == 'L':
+                f = (f - 1) % 4
             i += 1
     # if EXAMPLE: show()
     show()
     print('done @', pos)
+    print()
     return 1000 * (pos[0] + 1) + 4 * (pos[1] + 1) + grid[pos]
     
-            
-# def calc_password():
-#     # The final password is the sum of 1000 times the row, 4 times the column, and the facing. (rows & cols start at 1)
-#     global f
-#     ci, cj = pos
-#     print(ci + 1, cj + 1, grid[pos])
-#     return 1000 * (ci + 1) + 4 * (cj + 1) + grid[(ci, cj)]
-
-# pt1 = trace_path(moves)
-# print('Part 1:', pt1)
+pt1 = trace_path(moves)
 
 # Reset for part 2
 for k, v in grid.items():
@@ -259,55 +247,39 @@ for k, v in grid.items():
 pos = (0, min([k[1] for k in grid.keys() if k[0] == 0]))
 f = 0
 
-# pt2 = trace_path(moves, cube=True)
-# print('Part 2:', pt2)
+pt2 = trace_path(moves, cube=True)
 
-# print('Expected:', 162038)
-
-
-test_cases = [ # test pos, test f, expect pos, expect f
-    ((49, 100), 1, (50, 99), 2),    # 1 to 3 link
+print('Part 1:', pt1)
+if EXAMPLE:
+    assert 6032 == pt1, pt1
+else:
+    assert 106094 == pt1, pt1
     
+print('Part 2:', pt2)
+if EXAMPLE:
+    assert 5031 == pt2, pt2
+else:
+    assert 162038 == pt2, pt2
 
 
+# test_cases = [ # test pos, test f, expect pos, expect f
+#     ((49, 100), 1, (50, 99), 2),    # 1 to 3 link
+#     ((99, 99), 0, (49, 149), 3),    # 3 to 1 link
+#     # ((1, 149), 0, (49, 149), 3),    # 1 to 4 link
+#     ((101, 99), 0, (48, 149), 2),   # 4 to 1 link
+#     ((0, 101), 3, (199,1), 3),     # 1 to 6 link
+#     # (),     # 6 to 1 link
+#     # (),     # 2 to 5 link
+#     # (),     # 5 to 2 link
+#     # (),     # 2 to 6 link
+#     # (),     # 6 to 2 link
+#     # (),     # 3 to 5 link
+#     # (),     # 5 to 3 link
+# ]
 
-    ((99, 99), 0, (49, 149), 3),    # 3 to 1 link
-    ((1, 149), 0, (49, 149), 3),    # 1 to 4 link
-    ((101, 99), 0, (48, 149), 2),   # 4 to 1 link
-    ((101, 0), 3, ()),     # 1 to 6 link
-    (),     # 6 to 1 link
-    (),     # 2 to 5 link
-    (),     # 5 to 2 link
-    (),     # 2 to 6 link
-    (),     # 6 to 2 link
-    (),     # 3 to 5 link
-    (),     # 5 to 3 link
-]
-
-for tpos, tf, epos, ef in test_cases:
-    pos, f = tpos, tf
-    if update_pos(cube=True): 
-        assert (pos, f) == (epos, ef), (tpos, tf, pos, f)
-    else:
-        print('blocked:', pos)
-        
-# 1 to 3 link
-# 3 to 1 link
-
-# 1 to 4 link
-# 4 to 1 link
-    
-# 1 to 6 link
-# 6 to 1 link
-
-# 2 to 5 link
-# 5 to 2 link
-
-# 2 to 6 link
-# 6 to 2 link
-
-# 3 to 5 link
-# 5 to 3 link
-
-# 4 to 6 link
-# 6 to 4 link
+# for tpos, tf, epos, ef in test_cases:
+#     pos, f = tpos, tf
+#     if update_pos(cube=True): 
+#         assert (pos, f) == (epos, ef), (tpos, tf, pos, f)
+#     else:
+#         print('blocked:', pos)
