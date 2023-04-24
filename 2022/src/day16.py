@@ -1,6 +1,4 @@
-# import functools
 from functools import cache
-from pprint import pprint
 import re
 
 with open('../data/day16.txt') as f:
@@ -25,7 +23,6 @@ for l in lines:
     v = l[6:8]
     flow[v] = int(re.findall("\d+", l)[0])
     tunnels[v] = l.replace('valve ', 'valves ').split('valves ')[1].split(', ')
-# pprint(flow)
  
 @cache
 def max_pressure(cur, opened, toc, elephant_time=False):
