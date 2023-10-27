@@ -11,14 +11,15 @@ def find_int(s: str, all=False):
     return int(res[0])
 
 
-def read_list(file) -> list:
+def read_list(file, as_str=False) -> list:
     with open(f"../data/day{find_int(file.split('/')[-1])}.txt", "r") as f:
         lines = f.read().strip().split("\n")
-    try:
-        #  cast the list to all ints if they are all numerics
-        lines = [int(line) for line in lines]
-    except:
-        pass
+    if not as_str:
+        try:
+            #  cast the list to all ints if they are all numerics
+            lines = [int(line) for line in lines]
+        except:
+            pass
     return lines
     # if all(all(char.isnumeric() for char in line) for line in lines):
 
