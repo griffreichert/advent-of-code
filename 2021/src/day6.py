@@ -4,6 +4,7 @@ import utils
 lines = utils.read_list(__file__, as_str=True)
 fish = utils.find_int(lines[0], all=True)
 
+
 def lanternfish_populaiton_growth(time):
     # use a deque to count the number of fish with each ammount of time left
     population = deque([0 for _ in range(9)])
@@ -16,6 +17,7 @@ def lanternfish_populaiton_growth(time):
         # shift the population (decrease time) and have fish at 0 move to 8 (offspring)
         population.rotate(-1)
     return sum(population)
+
 
 print("p1")
 print(lanternfish_populaiton_growth(80))

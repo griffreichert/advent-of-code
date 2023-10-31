@@ -40,6 +40,18 @@ def lines_to_grid(lines, as_numpy=True):
         grid = np.array(grid)
     return grid
 
+def median(points: list) -> int:
+    # Sort the list of points
+    sorted_points = sorted(points)
+
+    # Calculate the median
+    num_points = len(sorted_points)
+    if num_points % 2 == 1:
+        median = sorted_points[num_points // 2]
+    else:
+        median = (sorted_points[num_points // 2 - 1] + sorted_points[num_points // 2]) // 2
+    return median
+
 # import requests
 # response = requests.get("https://adventofcode.com/2021/day/1/input")
 # print(response.text)
