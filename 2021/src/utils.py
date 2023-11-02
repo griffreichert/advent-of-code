@@ -34,6 +34,10 @@ def char_to_int(char) -> int:
     return item_int - 96 if item_int >= 97 else item_int - 38
 
 
+def list_to_int(_list: list) -> int:
+    return int(''.join(str(x) for x in _list))
+    
+
 def lines_to_grid(lines, as_numpy=True):
     grid = [[int(x) for x in line.strip().split(' ') if x != ''] for line in lines]
     if as_numpy:
