@@ -7,6 +7,7 @@ from pprint import pprint
 
 
 lines = utils.read_list(__file__, as_str=True)
+# grid = utils.lines_to_grid(lines)
 
 
 def p1():

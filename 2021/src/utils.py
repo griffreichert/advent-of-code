@@ -2,7 +2,9 @@ import re
 import numpy as np
 
 adjacents = ((1, 0), (0, 1), (-1, 0), (0, -1))
-neighbors = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1))
+neighbors = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+
+adjacents_3d = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1))
 
 
 class Ansii:
@@ -80,6 +82,10 @@ def read_list(file, as_str=False) -> list:
         except:
             pass
     return lines
+
+
+def show_grid():
+    pass
 
 
 # if all(all(char.isnumeric() for char in line) for line in lines):
