@@ -1,7 +1,9 @@
 import re
 import numpy as np
 
+# adjacents is just north south east west (not including current pos)
 adjacents = ((1, 0), (0, 1), (-1, 0), (0, -1))
+# neighbors includes diagonal corners (still not current pos)
 neighbors = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
 adjacents_3d = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1))
