@@ -5,11 +5,69 @@ adjacents = ((1, 0), (0, 1), (-1, 0), (0, -1))
 neighbors = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1))
 
 
+class Ansii:
+    green = "\u001b[32m"
+    clear = "\u001b[0m"
+
+
+def add_tuples(a, b):
+    return tuple(x + y for x, y in zip(a, b))
+
+
+def char_to_int(char) -> int:
+    """find the int representation of a char
+    lowercase go from 97-122 so shift it to 1-26
+    uppercase go from 65-90 so shift it to 27-52
+    """
+    item_int = ord(char)
+    return item_int - 96 if item_int >= 97 else item_int - 38
+
+
 def find_int(s: str, all=False):
     res = re.findall("\d+", s)
     if all:
         return [int(i) for i in res]
     return int(res[0])
+
+
+def lines_to_grid(lines, as_numpy=True):
+    # if there are spaces between numbers then split them by that
+    if " " in lines[0].strip():
+        grid = [[int(x) for x in line.strip().split(" ") if x != ""] for line in lines]
+    # otherwise numbers will just be treated as individual digits
+    else:
+        grid = [[int(i) for i in list(line)] for line in lines]
+    # convert list to numpy
+    if as_numpy:
+        grid = np.array(grid)
+    return grid
+
+
+def list_product(_list: list) -> int:
+    """find the product of the elements in a list"""
+    res = 1
+    for x in _list:
+        res *= x
+    return res
+
+
+def list_to_int(_list: list) -> int:
+    return int("".join(str(x) for x in _list))
+
+
+def median(points: list) -> int:
+    # Sort the list of points
+    sorted_points = sorted(points)
+
+    # Calculate the median
+    num_points = len(sorted_points)
+    if num_points % 2 == 1:
+        median = sorted_points[num_points // 2]
+    else:
+        median = (
+            sorted_points[num_points // 2 - 1] + sorted_points[num_points // 2]
+        ) // 2
+    return median
 
 
 def read_list(file, as_str=False) -> list:
@@ -22,40 +80,9 @@ def read_list(file, as_str=False) -> list:
         except:
             pass
     return lines
-    # if all(all(char.isnumeric() for char in line) for line in lines):
 
 
-def char_to_int(char) -> int:
-    """find the int representation of a char
-    lowercase go from 97-122 so shift it to 1-26
-    uppercase go from 65-90 so shift it to 27-52
-    """
-    item_int = ord(char)
-    return item_int - 96 if item_int >= 97 else item_int - 38
-
-
-def list_to_int(_list: list) -> int:
-    return int(''.join(str(x) for x in _list))
-    
-
-def lines_to_grid(lines, as_numpy=True):
-    grid = [[int(x) for x in line.strip().split(' ') if x != ''] for line in lines]
-    if as_numpy:
-        grid = np.array(grid)
-    return grid
-
-def median(points: list) -> int:
-    # Sort the list of points
-    sorted_points = sorted(points)
-
-    # Calculate the median
-    num_points = len(sorted_points)
-    if num_points % 2 == 1:
-        median = sorted_points[num_points // 2]
-    else:
-        median = (sorted_points[num_points // 2 - 1] + sorted_points[num_points // 2]) // 2
-    return median
-
+# if all(all(char.isnumeric() for char in line) for line in lines):
 # import requests
 # response = requests.get("https://adventofcode.com/2021/day/1/input")
 # print(response.text)
