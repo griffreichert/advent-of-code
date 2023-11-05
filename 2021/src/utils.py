@@ -27,6 +27,10 @@ def char_to_int(char) -> int:
     return item_int - 96 if item_int >= 97 else item_int - 38
 
 
+def dict_min_max_indecies(dict) -> tuple:
+    return min(dict, key=dict.get), max(dict, key=dict.get)
+
+
 def find_int(s: str, all=False):
     res = re.findall("\d+", s)
     if all:
