@@ -86,8 +86,25 @@ def read_list(file, as_str=False) -> list:
     return lines
 
 
-def show_grid():
-    pass
+def tuple_max(list_of_tuples) -> tuple:
+    """given a list of tuples, return the element wise maximum
+
+    ex: [(x, y), ... ] -> (max_x, max_y)
+    """
+    list_of_tuples = list(list_of_tuples)
+    return tuple(
+        max(tup[dim] for tup in list_of_tuples) for dim in range(len(list_of_tuples[0]))
+    )
+
+
+def show_grid(grid, map={0: ".", 1: "#"}):
+    print()
+    n, m = grid.shape
+    for i in range(n):
+        for j in range(m):
+            print(map[grid[i, j]], end=" ")
+        print()
+    print()
 
 
 # if all(all(char.isnumeric() for char in line) for line in lines):
