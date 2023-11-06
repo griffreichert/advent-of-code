@@ -27,6 +27,9 @@ hex_to_binary = {
     "F": "1111",
 }
 
+
+lines = ["D2FE28"]
+
 packet = "".join(hex_to_binary[char] for char in lines[0])
 
 # first three bits are the packet header
@@ -35,42 +38,47 @@ packet = "".join(hex_to_binary[char] for char in lines[0])
 # literals come in groups of 4 bits with 1 bit preceeding them (the last group is prefaced with a 0, others with a 1)
 
 
-def p1(packet):
-    packet_versions = []
-    packets = deque([packet])
-    while packets:
-        p = packets.popleft()
-        try:
-            version = p[:3]
-            id_type = p[3:6]
-        except:
-            break
-        # literal
-        if id_type == "100":
-            i = 6
-            while True:
-                pass
-        # operator
+def read_packet(packet):
+    # packet_versions = []
+    # packets = deque([packet])
+    # while packets:
+    #     p = packets.popleft()
+    print(packet)
+    # try:
+    version = packet[:3]
+    id_type = packet[3:6]
+    # except:
+    #     pass
+
+    # literal - base case
+    if id_type == "100":
+        i = 6
+        literal = ""
+        while packet[i] == "1":
+            literal += packet[i + 1 : i + 5]
+            i += 5
+        literal += packet[i + 1 : i + 5]
+        i += 5
+        print("literal", int(literal, 2))
+
+    # operator - recursive
+    else:
+        # type length id
+        type_len_id = packet[6]
+        if type_len_id == "1":
+            operator_len = 11
         else:
-            # type length id
-            type_len_id = p[6]
-            if type_len_id == "1":
-                pass
-            else:
-                pass
+            operator_len = 15
 
-        packet_versions.append(int(version, 2))
+    return int(version, 2)
 
-    return sum(packet_versions)
+    # return sum(packet_versions)
 
 
-def p2():
-    res = 0
-    return res
+print(read_packet(packet))
 
-
-_p1 = p1(packet)
-_p2 = p2()
+_p1 = None
+_p2 = None
 
 print(
     f"p1\n{utils.Ansii.green}{_p1}\n{utils.Ansii.clear}p2{utils.Ansii.green}\n{_p2}{utils.Ansii.clear}"
