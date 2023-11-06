@@ -28,7 +28,7 @@ hex_to_binary = {
 }
 
 
-lines = ["D2FE28"]
+# lines = ["8A004A801A8002F478"]
 
 packet = "".join(hex_to_binary[char] for char in lines[0])
 
@@ -39,16 +39,16 @@ packet = "".join(hex_to_binary[char] for char in lines[0])
 
 
 def read_packet(packet):
-    # packet_versions = []
-    # packets = deque([packet])
-    # while packets:
-    #     p = packets.popleft()
-    print(packet)
-    # try:
-    version = packet[:3]
+    # version_list = []
+
+    # while packet:
+    #     print(packet)
+
+    if all(char == "0" for char in packet) or len(packet) < 7:
+        return 0
+
+    version = int(packet[:3], 2)
     id_type = packet[3:6]
-    # except:
-    #     pass
 
     # literal - base case
     if id_type == "100":
@@ -59,18 +59,28 @@ def read_packet(packet):
             i += 5
         literal += packet[i + 1 : i + 5]
         i += 5
-        print("literal", int(literal, 2))
+        # print("literal", int(literal, 2))
+        return version + read_packet(packet[i:])
 
     # operator - recursive
     else:
+        print("operator", packet)
         # type length id
         type_len_id = packet[6]
+        i = 7
+        # number of sub packets
         if type_len_id == "1":
             operator_len = 11
+            num_sub_packets = int(packet[i : operator_len + i + 1])
         else:
+            # length of sub packets
             operator_len = 15
-
-    return int(version, 2)
+            len_sub_packets = int(packet[i : operator_len + i + 1])
+        i += operator_len
+        return version + read_packet(packet[i:])
+    # version_list = [int(version, 2) for version in version_list]
+    # print(version_list)
+    # return sum(version)
 
     # return sum(packet_versions)
 
