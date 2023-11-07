@@ -1,10 +1,4 @@
 import utils
-from collections import deque, defaultdict, Counter
-from heapq import heappop, heappush
-import numpy as np
-import re
-from pprint import pprint
-
 
 lines = utils.read_list(__file__, as_str=True)
 
@@ -27,23 +21,11 @@ hex_to_binary = {
     "F": "1111",
 }
 
-
-# lines = ["8A004A801A8002F478"]
-
+# lines = ["9C0141080250320F1802104A08"]
 packet = "".join(hex_to_binary[char] for char in lines[0])
 
-# first three bits are the packet header
-# next three bits are the packet type id
-# packets with id 4 are a literal
-# literals come in groups of 4 bits with 1 bit preceeding them (the last group is prefaced with a 0, others with a 1)
 
-
-def read_packet(packet):
-    # version_list = []
-
-    # while packet:
-    #     print(packet)
-
+def p1(packet):
     if all(char == "0" for char in packet) or len(packet) < 7:
         return 0
 
@@ -59,37 +41,100 @@ def read_packet(packet):
             i += 5
         literal += packet[i + 1 : i + 5]
         i += 5
-        # print("literal", int(literal, 2))
-        return version + read_packet(packet[i:])
+        return version + p1(packet[i:])
 
     # operator - recursive
     else:
-        print("operator", packet)
         # type length id
         type_len_id = packet[6]
         i = 7
         # number of sub packets
         if type_len_id == "1":
             operator_len = 11
-            num_sub_packets = int(packet[i : operator_len + i + 1])
+            # num_sub_packets = int(packet[i : operator_len + i + 1])
         else:
             # length of sub packets
             operator_len = 15
-            len_sub_packets = int(packet[i : operator_len + i + 1])
+            # len_sub_packets = int(packet[i : operator_len + i + 1])
         i += operator_len
-        return version + read_packet(packet[i:])
-    # version_list = [int(version, 2) for version in version_list]
-    # print(version_list)
-    # return sum(version)
-
-    # return sum(packet_versions)
+        return version + p1(packet[i:])
 
 
-print(read_packet(packet))
+def p2(packet, i=0):
+    operator_functions = [
+        sum,  # sum
+        utils.list_product,  # product
+        min,  # minimum
+        max,  # maximum
+        None,  # literal
+        # 1 if first sub packet is greater than second sub packet else 0 (always have exactly two sub packets)
+        lambda x: int(x[0] > x[1]),
+        # 1 if first sub packet is less than second sub packet else 0 (always have exactly two sub packets)
+        lambda x: int(x[0] < x[1]),
+        # 1 if first sub packet is equal to the second sub packet else 0 (always have exactly two sub packets)
+        lambda x: int(x[0] == x[1]),
+    ]
+    print(f"\ncall {i}\n{packet[i:]}")
+    # while i < len(packet):
 
-_p1 = None
-_p2 = None
+    i += 3  # skip over the version number
+    id_type = int(packet[i : i + 3], 2)
+    i += 3  # move pointer to after type id
 
-print(
-    f"p1\n{utils.Ansii.green}{_p1}\n{utils.Ansii.clear}p2{utils.Ansii.green}\n{_p2}{utils.Ansii.clear}"
-)
+    # literal - base case
+    if id_type == 4:
+        literal_str = ""
+        while packet[i] == "1":
+            literal_str += packet[i + 1 : i + 5]
+            i += 5
+        literal_str += packet[i + 1 : i + 5]
+        i += 5
+        literal = int(literal_str, 2)
+        print("literal", literal)
+        return literal, i
+
+    # operator - recursive
+    else:
+        print("operator", id_type, "\n", packet[i:])
+        # type length id
+        type_len_id = packet[i]
+        i += 1
+
+        sub_packets = []
+
+        # number of sub packets
+        if type_len_id == "1":
+            operator_len = 11
+            num_sub_packets = int(packet[i : operator_len + i], 2)
+            print(f"sub by cnt ({num_sub_packets})")
+            i += operator_len
+            before_i = i
+            for _ in range(num_sub_packets):
+                print("before", before_i)
+                sub_packet_res, i = p2(packet, i)
+                print("before", before_i, "returned", i, sub_packet_res)
+                sub_packets.append(sub_packet_res)
+                # if i >= len(packet) - 8:
+                #     break
+
+        # length of sub packets
+        else:
+            operator_len = 15
+            len_sub_packets = int(packet[i : operator_len + i], 2)
+            print(f"sub by len ({len_sub_packets})")
+            i += operator_len
+            len_sub_packets += i
+            while i < len_sub_packets:
+                sub_packet_res, i = p2(packet, i)
+                sub_packets.append(sub_packet_res)
+
+        print(f"={id_type}", sub_packets, "[", packet[i:], "]")
+        return operator_functions[id_type](sub_packets), i
+
+
+# _p1 = None  # p1(packet)
+_p2, _ = p2(packet)
+
+# print(f"p1\n{utils.Ansii.green}{_p1}\n{utils.Ansii.clear}")
+
+print(f"p2{utils.Ansii.green}\n{_p2}{utils.Ansii.clear}")
