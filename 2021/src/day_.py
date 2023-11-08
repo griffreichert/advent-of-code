@@ -23,6 +23,5 @@ def p2():
 _p1 = p1()
 _p2 = p2()
 
-print(
-    f"p1\n{utils.Ansii.green}{_p1}\n{utils.Ansii.clear}p2{utils.Ansii.green}\n{_p2}{utils.Ansii.clear}"
-)
+print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
+print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")
