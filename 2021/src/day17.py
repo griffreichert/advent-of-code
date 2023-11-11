@@ -1,35 +1,62 @@
 import utils
-from collections import deque, defaultdict, Counter
-from heapq import heappop, heappush
-import numpy as np
-import re
-from pprint import pprint
 
 
 lines = utils.read_list(__file__, as_str=True)
-(x1, x2), (y1, y2) = tuple(
+(x1, x2), (y2, y1) = tuple(
     tuple(int(i) for i in chunk[2:].split("..")) for chunk in lines[0][13:].split(", ")
 )
 
-# y1, y2 = min(y_coords), max(y_coords)
-# x1, x2 = min(x_coords), max(x_coords)
 
-print(x1, x2)
-print(y1, y2)
-
-
-def p1():
-    res = 0
-    return res
+def get_triangular_num(x):
+    tn = 1
+    t = 1
+    while tn < x:
+        t += 1
+        tn += t
+    return t
 
 
-def p2():
-    res = 0
-    return res
+min_vx = get_triangular_num(x1)
 
 
-_p1 = p1()
-_p2 = p2()
+def launch_probe(vx, vy):
+    """returns the horizontal calibration of the probe at the bottom depth (-1 miss left, 0 hit, 1 miss right)"""
+    x, y = vx, vy
+    while x <= x2 and y >= y2:
+        if x1 <= x <= x2 and y1 >= y >= y2:
+            return 0
+        vx = max(vx - 1, 0)
+        vy -= 1
+        x += vx
+        y += vy
+    return -1 if x < x1 else 1
+
+
+max_y = 0
+horz_calibration = 1
+for vy in range(1, 1_000):
+    horz_calibration = launch_probe(min_vx, vy)
+    if horz_calibration == 0:
+        max_y = vy
+
+_p1 = (max_y**2 + max_y) // 2
+
+
+"""
+y between [y2, max_y]
+x between [min_x, x2]
+
+"""
+velocities = set()
+
+for vy in range(y2, max_y + 1):
+    for vx in range(min_vx, x2 + 1):
+        horz_calibration = launch_probe(vx, vy)
+        if horz_calibration == 0:
+            velocities.add((vx, vy))
+
+_p2 = len(velocities)
+
 
 print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
 print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")
