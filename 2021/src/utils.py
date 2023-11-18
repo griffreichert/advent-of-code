@@ -10,7 +10,13 @@ adjacents_3d = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0,
 
 
 class Ansii:
+    red = "\u001b[31m"
     green = "\u001b[32m"
+    yellow = "\u001b[33m"
+    blue = "\u001b[34m"
+    purple = "\u001b[35m"
+    cyan = "\u001b[36m"
+
     clear = "\u001b[0m"
 
 
