@@ -1,6 +1,5 @@
 import utils
-from pprint import pprint
-
+import itertools
 
 snailfish = utils.read_list(__file__, as_str=True)
 
@@ -34,28 +33,25 @@ def show_snailfish(snailfish):
 
 
 def snailfish_magnitude(snailfish):
-    print("hi")
     # recursively take 3 * left + 2 * right
-    i = 0
-    while i < len(snailfish) - 1:
-        print("hi2")
-        print(snailfish, i)
-        cur_num, cur_depth = snailfish[i]
-        nxt_num, nxt_depth = snailfish[i + 1]
-        if cur_depth == nxt_depth:
-            print("mag")
-            snailfish = (
-                snailfish[:i]
-                + [(3 * cur_num + 2 * nxt_num, cur_depth - 1)]
-                + snailfish[i + 2 :]
-            )
-            i -= 1
-        i += 1
-    return snailfish
+    while len(snailfish) > 1:
+        i = 0
+        while i < len(snailfish) - 1:
+            cur_num, cur_depth = snailfish[i]
+            nxt_num, nxt_depth = snailfish[i + 1]
+            if cur_depth == nxt_depth:
+                snailfish = (
+                    snailfish[:i]
+                    + [(3 * cur_num + 2 * nxt_num, cur_depth - 1)]
+                    + snailfish[i + 2 :]
+                )
+                i -= 1
+            i += 1
+    return snailfish[0][0]
+    """Just multiple by 3 when crossing '[', divide by 2 when crossing ']' and change multiplier by multiplier / 3 * 2 when crossing ','. This will result in the multiplier to be the correct number when hitting a number, which we can then just multiply and add it to the total."""
 
 
 def reduce_snailfish(snailfish):
-    show_snailfish(snailfish)
     i = 0
     while True:
         # try to go through without exploding
@@ -123,25 +119,33 @@ def reduce_snailfish(snailfish):
             return snailfish
 
 
+def combine_snailfish(a, b):
+    return [(a_num, a_depth + 1) for a_num, a_depth in a] + [
+        (b_num, b_depth + 1) for b_num, b_depth in b
+    ]
+
+
 snailfish = [parse_snail_num(s) for s in snailfish]
 
-# final_snailfish = snailfish[0]
-# for s in snailfish[1:]:
-#     shifted_final = [(num, depth + 1) for num, depth in final_snailfish]
-#     shifted_s = [(num, depth + 1) for num, depth in s]
-#     final_snailfish = reduce_snailfish(shifted_final + shifted_s)
+# p1 - add all snailfish numbers and find the largest magnitude
+final_snailfish = snailfish[0]
+for s in snailfish[1:]:
+    final_snailfish = reduce_snailfish(combine_snailfish(final_snailfish, s))
 
-# print("final")
-# show_snailfish(final_snailfish)
+_p1 = snailfish_magnitude(final_snailfish)
+print("p1")
+# p2 - find largest magnitude from adding any of two different snailfish numbers in list
+# bruteus forceus - iterate over all combos (except the same)
+magnitudes = []
+for i, si in enumerate(snailfish):
+    for j, sj in enumerate(snailfish):
+        if i == j:
+            continue
+        else:
+            mag = snailfish_magnitude(reduce_snailfish(combine_snailfish(si, sj)))
+            magnitudes.append((mag, i, j))
 
-print(snailfish_magnitude(snailfish))
-
-# print([str(num) for num, depth in final_snailfish])
-
-
-def p1():
-    res = 0
-    return res
+print(max(magnitudes, key=lambda x: x[0]))
 
 
 def p2():
@@ -149,7 +153,6 @@ def p2():
     return res
 
 
-_p1 = p1()
 _p2 = p2()
 
 print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
