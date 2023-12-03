@@ -1,4 +1,5 @@
 import utils
+from collections import defaultdict
 
 
 lines = utils.read_list(__file__, as_str=True)
@@ -42,12 +43,11 @@ def p1():
 
 
 def p2():
-    gears_seen = {}
+    gears_seen = defaultdict(list)
     for i, line in enumerate(lines):
         j = 0
         while j < len(line):
-            cur = line[j]
-            if cur.isdigit():
+            if line[j].isdigit():
                 k = j + 1
                 while k < len(line) and line[k].isdigit():
                     k += 1
@@ -55,10 +55,7 @@ def p2():
                 for x in range(j, k):
                     gear_pos = gear_search(i, x)
                     if gear_pos is not None:
-                        if gear_pos not in gears_seen:
-                            gears_seen[gear_pos] = [num]
-                        else:
-                            gears_seen[gear_pos].append(num)
+                        gears_seen[gear_pos].append(num)
                         break
                 j = k
             j += 1
