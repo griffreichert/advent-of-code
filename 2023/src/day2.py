@@ -16,11 +16,12 @@ def p1():
             ]
             colors = {b: int(a) for a, b in colors}
             if not all(
-                colors.get(col, 0) <= colmax
-                for col, colmax in [("red", 12), ("green", 13), ("blue", 14)]
+                colors.get(color, 0) <= color_max
+                for color, color_max in [("red", 12), ("green", 13), ("blue", 14)]
             ):
                 break
         else:
+            # add index of possible lines
             res += i + 1
     return res
 
@@ -29,17 +30,12 @@ def p2():
     res = 0
     for line in lines:
         line = line[line.find(":") + 1 :].strip()
-
         colors_needed = defaultdict(int)
-
         for game in line.split(";"):
-            colors = [
-                tuple(colstr.strip().split(" ")) for colstr in game.strip().split(",")
-            ]
+            colors = [tuple(colstr.strip().split(" ")) for colstr in game.split(",")]
             colors = {b: int(a) for a, b in colors}
             for col, draws in colors.items():
                 colors_needed[col] = max(colors_needed[col], draws)
-
         res += utils.list_product(colors_needed.values())
     return res
 
