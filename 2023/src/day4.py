@@ -1,9 +1,4 @@
 import utils
-from collections import deque, defaultdict, Counter
-from heapq import heappop, heappush
-import numpy as np
-import re
-from pprint import pprint
 
 
 lines = utils.read_list(__file__, as_str=True)
@@ -25,10 +20,8 @@ def p1():
 def p2():
     card_counts = {i + 1: 1 for i in range(len(cards))}
     for i, (nums, winners) in cards.items():
-        num_winners = sum(n in winners for n in nums)
-        if num_winners > 0:
-            for j in range(i + 1, min(len(cards), i + num_winners) + 1):
-                card_counts[j] += card_counts[i]
+        for j in range(i + 1, min(len(cards), i + sum(n in winners for n in nums)) + 1):
+            card_counts[j] += card_counts[i]
     return sum(card_counts.values())
 
 
