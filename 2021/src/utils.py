@@ -24,6 +24,10 @@ def add_tuples(a, b):
     return tuple(x + y for x, y in zip(a, b))
 
 
+def sub_tuples(a, b):
+    return tuple(x - y for x, y in zip(a, b))
+
+
 def char_to_int(char) -> int:
     """find the int representation of a char
     lowercase go from 97-122 so shift it to 1-26
@@ -115,6 +119,10 @@ def show_grid(grid, map={0: ".", 1: "#"}):
             print(map[grid[i, j]], end=" ")
         print()
     print()
+
+
+def euclidean_distance(a, b):
+    return np.linalg.norm(np.array(a) - np.array(b))
 
 
 # if all(all(char.isnumeric() for char in line) for line in lines):
