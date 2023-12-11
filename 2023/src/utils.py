@@ -117,6 +117,25 @@ def show_grid(grid, map={0: ".", 1: "#"}):
     print()
 
 
+def bubble_sort(list_to_sort, comparison_function):
+    """given a list and a comparison function, bubble sort a list
+
+    Args:
+        list_to_sort (list): list to sort, can be tuples or whatever
+        comparison_function (function): function that will sort the list, should take two arguments and return true if the first is less than the second
+
+    Returns:
+        _type_: _description_
+    """
+    for i in range(len(list_to_sort)):
+        for j in reversed(range(1, i + 1)):
+            if not comparison_function(list_to_sort[j - 1], list_to_sort[j]):
+                tmp = list_to_sort[j - 1]
+                list_to_sort[j - 1] = list_to_sort[j]
+                list_to_sort[j] = tmp
+    return list_to_sort
+
+
 # if all(all(char.isnumeric() for char in line) for line in lines):
 # import requests
 # response = requests.get("https://adventofcode.com/2021/day/1/input")
