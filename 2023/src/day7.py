@@ -1,13 +1,8 @@
 import utils
-from collections import deque, defaultdict, Counter
-from heapq import heappop, heappush
-import numpy as np
-import re
-from pprint import pprint
+from collections import Counter
 
 
 lines = utils.read_list(__file__, as_str=True)
-# grid = utils.lines_to_grid(lines)
 
 
 def parse_hand(h):
