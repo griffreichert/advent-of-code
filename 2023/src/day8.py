@@ -12,6 +12,7 @@ graph = {
     )
     for line in lines[2:]
 }
+# could do re.search("(...) = \((...), (...)\)", line).groups()
 
 
 def solve_maze(start, ends):
