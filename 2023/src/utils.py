@@ -93,6 +93,7 @@ def read_list(file, as_str=False) -> list:
             lines = [int(line) for line in lines]
         except:
             pass
+    # TODO find all ints
     return lines
 
 
