@@ -5,7 +5,7 @@ import numpy as np
 import re
 from pprint import pprint
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 grid = utils.lines_to_grid(lines)
 
 

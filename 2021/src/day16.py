@@ -1,6 +1,6 @@
 import utils
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 
 # read in each char as an int (convert hex to decimal, then interpret it as a 4 bit 0 padded binary string)
 packet = "".join(f"{int(char, base=16):04b}" for char in lines[0])

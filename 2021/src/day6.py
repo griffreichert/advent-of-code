@@ -1,8 +1,8 @@
 from collections import deque
 import utils
 
-lines = utils.read_list(__file__, as_str=True)
-fish = utils.find_int(lines[0], all=True)
+lines = utils.read_lines(__file__, parse_ints=True)
+fish = utils.find_ints(lines[0])
 
 
 def lanternfish_populaiton_growth(time):
@@ -10,7 +10,7 @@ def lanternfish_populaiton_growth(time):
     population = deque([0 for _ in range(9)])
     for f in fish:
         population[f] += 1
-    
+
     for _ in range(time):
         # adult fish reproduce every 6 days (move them to 7 bc we shift)
         population[7] += population[0]

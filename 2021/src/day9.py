@@ -3,7 +3,7 @@ import utils
 import numpy as np
 from pprint import pprint
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 grid = utils.lines_to_grid(lines)
 n, m = grid.shape
 

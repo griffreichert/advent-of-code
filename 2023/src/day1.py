@@ -1,7 +1,7 @@
 import utils
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=False)
 
 
 def get_first_and_last_nums(line):
@@ -11,7 +11,6 @@ def get_first_and_last_nums(line):
 
 _p1 = sum(get_first_and_last_nums(line) for line in lines)
 
-print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
 
 # shoutout the boy Aidan for some clever string manipulation
 nums_dict = {
@@ -32,5 +31,5 @@ for line in lines:
         line = line.replace(num, num_map)
     _p2 += get_first_and_last_nums(line)
 
-
+print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
 print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")

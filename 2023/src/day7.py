@@ -2,7 +2,7 @@ import utils
 from collections import Counter
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=False)
 
 
 def parse_hand(h):
@@ -106,13 +106,10 @@ def p2():
         # use original for tiebreaks
         hands.append((original, score_hand(hand), int(bid)))
 
-    hands = utils.bubble_sort(hands, compare_hands)
+    ranked_hands = utils.bubble_sort(hands, compare_hands)
 
-    return total_winnings(hands)
+    return total_winnings(ranked_hands)
 
 
-_p1 = p1()
-_p2 = p2()
-
-print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
-print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")
+print(f"p1\n{utils.Ansii.green}{p1()}{utils.Ansii.clear}")
+print(f"p2\n{utils.Ansii.green}{p2()}{utils.Ansii.clear}")

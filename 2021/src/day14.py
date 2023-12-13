@@ -2,7 +2,7 @@ import utils
 from collections import Counter
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 
 
 def expand_polymers(iters):

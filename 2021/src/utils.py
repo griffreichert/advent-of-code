@@ -41,11 +41,11 @@ def dict_min_max_indecies(dict) -> tuple:
     return min(dict, key=dict.get), max(dict, key=dict.get)
 
 
-def find_int(s: str, all=False):
-    res = re.findall("\d+", s)
-    if all:
-        return [int(i) for i in res]
-    return int(res[0])
+def find_ints(s: str):
+    return [int(i) for i in re.findall(r"-?\d+", s)]
+    # if all:
+    #     return [int(i) for i in res]
+    # return int(res[0])
 
 
 def lines_to_grid(lines, as_numpy=True):
@@ -88,10 +88,10 @@ def median(points: list) -> int:
     return median
 
 
-def read_list(file, as_str=False) -> list:
-    with open(f"../data/day{find_int(file.split('/')[-1])}.txt", "r") as f:
+def read_lines(file, parse_ints=False) -> list:
+    with open(f"../data/day{find_ints(file.split('/')[-1])}.txt", "r") as f:
         lines = f.read().strip().split("\n")
-    if not as_str:
+    if parse_ints:
         try:
             #  cast the list to all ints if they are all numerics
             lines = [int(line) for line in lines]

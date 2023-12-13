@@ -2,13 +2,13 @@ import utils
 import numpy as np
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=False)
 
 races = [
     (t, d)
     for t, d in zip(
-        utils.find_int(lines[0].split(":")[-1], all=True),
-        utils.find_int(lines[1].split(":")[-1], all=True),
+        utils.find_ints(lines[0].split(":")[-1], all=True),
+        utils.find_ints(lines[1].split(":")[-1], all=True),
     )
 ]
 

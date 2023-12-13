@@ -1,7 +1,7 @@
 import utils
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 (x1, x2), (y2, y1) = tuple(
     tuple(int(i) for i in chunk[2:].split("..")) for chunk in lines[0][13:].split(", ")
 )

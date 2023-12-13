@@ -1,6 +1,6 @@
 import utils
 
-lines = utils.read_list(__file__)
+lines = utils.read_lines(__file__)
 
 print("p1")
 print(sum(1 for i in range(len(lines) - 1) if lines[i + 1] > lines[i]))

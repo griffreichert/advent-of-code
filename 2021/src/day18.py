@@ -1,6 +1,6 @@
 import utils
 
-snailfish = utils.read_list(__file__, as_str=True)
+snailfish = utils.read_lines(__file__, parse_ints=True)
 
 
 def snailfish_magnitude(snailfish: str):

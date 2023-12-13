@@ -1,15 +1,17 @@
 import utils
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=False)
 
 
 cards = {
-    utils.find_int(line.split(":")[0]): tuple(
-        utils.find_int(part, all=True) for part in line.split(":")[-1].split("|")
+    utils.find_ints(line.split(":")[0])[0]: tuple(
+        utils.find_ints(part) for part in line.split(":")[-1].split("|")
     )
     for line in lines
 }
+# TODO refactor this using regex search
+# re.search("(...) = \((...), (...)\)", line).groups()
 
 
 def p1():
@@ -25,8 +27,5 @@ def p2():
     return sum(card_counts.values())
 
 
-_p1 = p1()
-_p2 = p2()
-
-print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
-print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")
+print(f"p1\n{utils.Ansii.green}{p1()}{utils.Ansii.clear}")
+print(f"p2\n{utils.Ansii.green}{p2()}{utils.Ansii.clear}")

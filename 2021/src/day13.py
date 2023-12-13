@@ -1,7 +1,7 @@
 import utils
 import numpy as np
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 # split points from fold instructions and parse inputs to correct dtypes
 points = [tuple(line.split(",")) for line in lines[: lines.index("")]]
 points = set((int(x), int(y)) for x, y in points)

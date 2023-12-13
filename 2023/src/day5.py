@@ -1,12 +1,12 @@
 import utils
 
 
-lines = utils.read_list(__file__, as_str=True)
-seeds = utils.find_int(lines[0], all=True)
+lines = utils.read_lines(__file__, parse_ints=False)
+seeds = utils.find_ints(lines[0])
 
 with open(f"../data/day5.txt", "r") as f:
     maps = [
-        [tuple(utils.find_int(m_line, all=True)) for m_line in m_chunk.split("\n")[1:]]
+        [tuple(utils.find_ints(m_line)) for m_line in m_chunk.split("\n")[1:]]
         for m_chunk in f.read().strip().split("\n\n")[1:]
     ]
 
@@ -63,8 +63,5 @@ def p2():
     return min(grow_seed_range(s_start, s_len) for s_start, s_len in new_seeds)
 
 
-_p1 = p1()
-_p2 = p2()
-
-print(f"p1\n{utils.Ansii.green}{_p1}{utils.Ansii.clear}")
-print(f"p2\n{utils.Ansii.green}{_p2}{utils.Ansii.clear}")
+print(f"p1\n{utils.Ansii.green}{p1()}{utils.Ansii.clear}")
+print(f"p2\n{utils.Ansii.green}{p2()}{utils.Ansii.clear}")

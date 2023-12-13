@@ -2,7 +2,7 @@ import utils
 from collections import deque, defaultdict
 
 
-lines = utils.read_list(__file__, as_str=True)
+lines = utils.read_lines(__file__, parse_ints=True)
 
 caves = defaultdict(list)
 big_caves = set()
