@@ -8,7 +8,7 @@ import itertools
 import math
 
 
-lines = utils.read_lines(__file__, parse_ints=True)
+lines = utils.read_lines(__file__, parse_ints=False)
 # grid = utils.lines_to_grid(lines)
 
 
