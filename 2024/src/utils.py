@@ -1,4 +1,6 @@
 import re
+from pathlib import Path
+
 import numpy as np
 
 # adjacents is just north south east west (not including current pos)
@@ -54,16 +56,16 @@ def lines_to_grid(lines, as_numpy=True):
     return grid
 
 
-def list_product(_list: list) -> int:
+def list_product(list: list) -> int:
     """find the product of the elements in a list"""
     res = 1
-    for x in _list:
+    for x in list:
         res *= x
     return res
 
 
-def list_to_int(_list: list) -> int:
-    return int("".join(str(x) for x in _list))
+def list_to_int(list: list) -> int:
+    return int("".join(str(x) for x in list))
 
 
 def median(points: list) -> int:
@@ -82,7 +84,8 @@ def median(points: list) -> int:
 
 
 def read_lines(file, parse_ints=False) -> list:
-    with open(f"../data/day{find_ints(file.split('/')[-1])[0]}.txt", "r") as f:
+    data_path = Path(__file__).parents[1] / "data"
+    with open(data_path / f"day{find_ints(file.split('/')[-1])[0]}.txt", "r") as f:
         lines = f.read().strip().split("\n")
     if parse_ints:
         try:
