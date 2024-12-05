@@ -1,49 +1,36 @@
-import copy
-
 import utils
 
 lines = utils.read_lines(__file__, parse_ints=True)
 
 
 def check_line(line):
-    c1 = c2 = False
     # all increasing or all decreasing
-    if list(sorted(line)) == list(line) or list(sorted(line, reverse=True)) == list(
-        line
-    ):
-        c1 = True
-    for i in range(len(line) - 1):
-        step = abs(line[i + 1] - line[i])
+    all_inc_dec: bool = (
+        list(sorted(line)) == line or list(sorted(line, reverse=True)) == line
+    )
+    for i, j in zip(line, line[1:]):
+        step = abs(i - j)
         if step > 3 or step < 1:
             break
     else:
-        c2 = True
-    if c1 and c2:
-        return 1
+        if all_inc_dec:
+            return 1
     return 0
 
 
 def p1():
-    res = 0
-
-    for line in lines:
-        res += check_line(line)
-    return res
+    return sum(check_line(line) for line in lines)
 
 
 def p2():
     res = 0
     for line in lines:
-        full_res = check_line(line)
-        if full_res:
-            res += full_res
+        if check_line(line):
+            res += 1
         else:
             for i in range(len(line)):
-                line_copy: list = copy.deepcopy(line)
-                line_copy.pop(i)
-                r = check_line(line_copy)
-                if r:
-                    res += r
+                if check_line(line[:i] + line[i + 1 :]):
+                    res += 1
                     break
     return res
 
