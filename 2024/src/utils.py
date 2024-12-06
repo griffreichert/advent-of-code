@@ -28,6 +28,15 @@ def add_tuples(a, b):
     return tuple(x + y for x, y in zip(a, b))
 
 
+def update_pos_safe(
+    pos: tuple[int, int], dir: tuple[int | int], shape: tuple[int, int]
+) -> tuple[int, int] | None:
+    npos = add_tuples(pos, dir)
+    if any(n < 0 or n >= s for n, s in zip(npos, shape)):
+        return None
+    return npos
+
+
 def char_to_int(char) -> int:
     """find the int representation of a char
     lowercase go from 97-122 so shift it to 1-26

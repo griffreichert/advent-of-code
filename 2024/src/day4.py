@@ -15,10 +15,8 @@ mapping = {
 def is_xmas(grid, pos, dir, target=3) -> bool:
     letter = 0
     while True:
-        npos = utils.add_tuples(pos, dir)
-        if any(i < 0 for i in npos):
-            break
-        try:
+        npos = utils.update_pos_safe(pos, dir, grid.shape)
+        if npos is not None:
             if grid[npos] == letter + 1:
                 pos = npos
                 letter += 1
@@ -26,7 +24,7 @@ def is_xmas(grid, pos, dir, target=3) -> bool:
                     return True
             else:
                 break
-        except IndexError:
+        else:
             break
     return False
 
