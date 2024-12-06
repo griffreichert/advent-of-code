@@ -8,6 +8,8 @@ adjacents = ((1, 0), (0, 1), (-1, 0), (0, -1))
 # neighbors includes diagonal corners (still not current pos)
 neighbors = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
 
+diagonals = ((-1, -1), (-1, 1), (1, -1), (1, 1))
+
 adjacents_3d = ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1))
 
 
