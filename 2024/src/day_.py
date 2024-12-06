@@ -23,5 +23,5 @@ def p2():
     return res
 
 
-print(f"p1\n{utils.Ansii.green}{p1()}{utils.Ansii.clear}")
+print(f"p1\n{utils.Ansii.green}{p1()}{utils.Ansii.clear}\n")
 print(f"p2\n{utils.Ansii.green}{p2()}{utils.Ansii.clear}")
