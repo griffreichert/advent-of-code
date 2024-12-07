@@ -11,6 +11,8 @@ def p1():
         heap = [line[1:]]
         while heap:
             cur = heap.pop(0)
+            if cur[0] > ans:
+                continue
             if len(cur) == 1:
                 if ans == cur[0]:
                     res += ans
@@ -30,6 +32,8 @@ def p2():
         heap = [line[1:]]
         while heap:
             cur = heap.pop(0)
+            if cur[0] > ans:
+                continue
             if len(cur) == 1:
                 if ans == cur[0]:
                     res += ans
