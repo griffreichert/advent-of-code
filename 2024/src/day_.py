@@ -11,6 +11,7 @@ import utils
 # lines = utils.read_lines(__file__, parse_ints=False)
 lines = utils.read_lines(__file__, parse_ints=True)
 # grid = utils.lines_to_grid(lines)
+print(lines)
 
 
 def p1():
