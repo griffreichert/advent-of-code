@@ -28,6 +28,10 @@ def add_tuples(a, b):
     return tuple(x + y for x, y in zip(a, b))
 
 
+def sub_tuples(a, b):
+    return tuple(x - y for x, y in zip(a, b))
+
+
 def update_pos_safe(
     pos: tuple[int, int], dir: tuple[int | int], shape: tuple[int, int]
 ) -> tuple[int, int] | None:
